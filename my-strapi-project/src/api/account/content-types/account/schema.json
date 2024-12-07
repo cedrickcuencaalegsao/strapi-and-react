@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "accounts",
+  "info": {
+    "singularName": "account",
+    "pluralName": "accounts",
+    "displayName": "account"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "uuID": {
+      "type": "uid",
+      "maxLength": 15,
+      "minLength": 8,
+      "required": true
+    },
+    "account_type": {
+      "type": "string"
+    },
+    "account_number": {
+      "type": "biginteger",
+      "unique": true
+    }
+  }
+}
