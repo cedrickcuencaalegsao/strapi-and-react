@@ -1,7 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import AppLayout from "../../Layout/app";
+import { useEffect } from "react";
 
 export default function Transaction() {
   // Example data for transactions
+  const navigate = useNavigate();
   const transactions = [
     {
       id: 1,
@@ -14,26 +17,34 @@ export default function Transaction() {
       id: 2,
       date: "2024-10-27",
       description: "Transfer from Savings",
-      amount: 2000.00,
+      amount: 2000.0,
       type: "Credit",
     },
     {
       id: 3,
       date: "2024-10-25",
       description: "Payment to Vendor Y",
-      amount: -500.00,
+      amount: -500.0,
       type: "Debit",
     },
   ];
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (!token || token === null) navigate("/");
+  });
 
   return (
     <AppLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-gray-800">Transaction History</h1>
+        <h1 className="text-2xl font-bold text-gray-800">
+          Transaction History
+        </h1>
 
         {/* Filters Section */}
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <h3 className="text-xl font-semibold text-gray-700">Filter Transactions</h3>
+          <h3 className="text-xl font-semibold text-gray-700">
+            Filter Transactions
+          </h3>
           <div className="flex space-x-4 mt-4">
             <select className="border border-gray-300 p-2 rounded-md">
               <option>Date</option>
@@ -71,15 +82,20 @@ export default function Transaction() {
                 className="flex justify-between items-center border-b border-gray-300 pb-4"
               >
                 <div>
-                  <p className="text-lg font-semibold">{transaction.description}</p>
+                  <p className="text-lg font-semibold">
+                    {transaction.description}
+                  </p>
                   <p className="text-sm text-gray-500">{transaction.date}</p>
                 </div>
                 <div
                   className={`text-sm font-semibold ${
-                    transaction.type === "Credit" ? "text-green-500" : "text-red-500"
+                    transaction.type === "Credit"
+                      ? "text-green-500"
+                      : "text-red-500"
                   }`}
                 >
-                  {transaction.type === "Credit" ? "+" : "-"}${transaction.amount.toFixed(2)}
+                  {transaction.type === "Credit" ? "+" : "-"}$
+                  {transaction.amount.toFixed(2)}
                 </div>
               </div>
             ))}
