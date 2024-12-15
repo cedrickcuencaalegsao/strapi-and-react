@@ -18,11 +18,14 @@
     "type": {
       "type": "string"
     },
-    "ammount": {
+    "amount": {
       "type": "decimal"
     },
     "email": {
       "type": "email"
+    },
+    "account_number": {
+      "type": "biginteger"
     }
   }
 }

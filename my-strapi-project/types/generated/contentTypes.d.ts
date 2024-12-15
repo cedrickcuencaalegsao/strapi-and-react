@@ -413,7 +413,8 @@ export interface ApiTransactionTransaction extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    ammount: Schema.Attribute.Decimal;
+    account_number: Schema.Attribute.BigInteger;
+    amount: Schema.Attribute.Decimal;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
