@@ -1,12 +1,12 @@
-// src/Hooks/useDeposit.js
+// src/Hooks/useWithdraw.js
 import { useState } from 'react';
 import axios from 'axios';
 
-export const useDeposit = () => {
+export const useWithdraw = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const makeDeposit = async (depositData) => {
+    const makeWithdraw = async (withdrawData) => {
         setIsLoading(true);
         setError(null);
         const token = sessionStorage.getItem('token');
@@ -16,7 +16,7 @@ export const useDeposit = () => {
                 `http://localhost:1337/api/transactions`,
                 {
                     data: {
-                        ...depositData.data,
+                        ...withdrawData.data,
                         publishedAt: null
                     }
                 },
@@ -31,7 +31,7 @@ export const useDeposit = () => {
             setIsLoading(false);
             return response.data;
         } catch (err) {
-            const errorMessage = err.response?.data?.error?.message || 'An error occurred during deposit';
+            const errorMessage = err.response?.data?.error?.message || 'An error occurred during withdrawal';
             setError(errorMessage);
             setIsLoading(false);
             throw new Error(errorMessage);
@@ -39,7 +39,7 @@ export const useDeposit = () => {
     };
 
     return {
-        makeDeposit,
+        makeWithdraw,
         isLoading,
         error
     };

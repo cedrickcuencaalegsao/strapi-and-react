@@ -1,37 +1,50 @@
+// Transaction.jsx
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import AppLayout from "../../Layout/app";
-import { useEffect } from "react";
+import { useGetTransaction } from "../../Hooks/useGetTransaction";
 
 export default function Transaction() {
-  // Example data for transactions
   const navigate = useNavigate();
-  const transactions = [
-    {
-      id: 1,
-      date: "2024-10-28",
-      description: "Purchase at Store X",
-      amount: -150.75,
-      type: "Debit",
-    },
-    {
-      id: 2,
-      date: "2024-10-27",
-      description: "Transfer from Savings",
-      amount: 2000.0,
-      type: "Credit",
-    },
-    {
-      id: 3,
-      date: "2024-10-25",
-      description: "Payment to Vendor Y",
-      amount: -500.0,
-      type: "Debit",
-    },
-  ];
+  const { getTransactions } = useGetTransaction();
+  const [transactions, setTransactions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     const token = sessionStorage.getItem("token");
-    if (!token || token === null) navigate("/");
-  });
+    if (!token || token === null) {
+      navigate("/");
+      return;
+    }
+
+    const fetchTransactions = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await getTransactions();
+        setTransactions(data);
+      } catch (error) {
+        setError(error.message || "Failed to fetch transactions");
+        console.error("Error fetching transactions:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
+
+  // Function to format date
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
     <AppLayout>
@@ -40,73 +53,48 @@ export default function Transaction() {
           Transaction History
         </h1>
 
-        {/* Filters Section */}
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h3 className="text-xl font-semibold text-gray-700">
-            Filter Transactions
-          </h3>
-          <div className="flex space-x-4 mt-4">
-            <select className="border border-gray-300 p-2 rounded-md">
-              <option>Date</option>
-              <option>Last 7 days</option>
-              <option>Last 30 days</option>
-            </select>
-            <select className="border border-gray-300 p-2 rounded-md">
-              <option>Transaction Type</option>
-              <option>All</option>
-              <option>Credit</option>
-              <option>Debit</option>
-            </select>
-            <input
-              type="number"
-              placeholder="Min Amount"
-              className="border border-gray-300 p-2 rounded-md"
-            />
-            <input
-              type="number"
-              placeholder="Max Amount"
-              className="border border-gray-300 p-2 rounded-md"
-            />
-            <button className="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">
-              Apply Filters
-            </button>
-          </div>
-        </div>
-
         {/* Transactions List */}
         <div className="bg-white p-4 rounded-lg shadow-md">
-          <div className="space-y-4">
-            {transactions.map((transaction) => (
-              <div
-                key={transaction.id}
-                className="flex justify-between items-center border-b border-gray-300 pb-4"
-              >
-                <div>
-                  <p className="text-lg font-semibold">
-                    {transaction.description}
-                  </p>
-                  <p className="text-sm text-gray-500">{transaction.date}</p>
-                </div>
+          {isLoading ? (
+            <div className="text-center py-4">Loading transactions...</div>
+          ) : error ? (
+            <div className="text-center py-4 text-red-500">{error}</div>
+          ) : transactions.length === 0 ? (
+            <div className="text-center py-4">No transactions found</div>
+          ) : (
+            <div className="space-y-4">
+              {transactions.map((transaction) => (
                 <div
-                  className={`text-sm font-semibold ${
-                    transaction.type === "Credit"
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }`}
+                  key={transaction.id}
+                  className="flex justify-between items-center border-b border-gray-300 pb-4"
                 >
-                  {transaction.type === "Credit" ? "+" : "-"}$
-                  {transaction.amount.toFixed(2)}
+                  <div>
+                    <p className="text-lg font-semibold">
+                      {transaction.type.charAt(0).toUpperCase() +
+                        transaction.type.slice(1)}{" "}
+                      - {transaction.account_number}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {formatDate(transaction.createdAt)}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      ID: {transaction.documentId}
+                    </p>
+                  </div>
+                  <div
+                    className={`text-sm font-semibold ${
+                      transaction.type === "deposit"
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {transaction.type === "deposit" ? "+" : "-"}$
+                    {Math.abs(transaction.amount).toFixed(2)}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* New Transaction Button */}
-        <div className="flex justify-end">
-          <button className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700">
-            Add New Transaction
-          </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </AppLayout>
