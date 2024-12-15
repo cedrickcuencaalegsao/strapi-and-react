@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "transactions",
+  "info": {
+    "singularName": "transaction",
+    "pluralName": "transactions",
+    "displayName": "transaction",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "uuid": {
+      "type": "biginteger"
+    },
+    "type": {
+      "type": "string"
+    },
+    "ammount": {
+      "type": "decimal"
+    },
+    "email": {
+      "type": "email"
+    }
+  }
+}
